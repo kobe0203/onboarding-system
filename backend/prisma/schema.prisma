@@ -1,0 +1,90 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+enum RequestStatus {
+  DRAFT
+  PENDING
+  PROCESSING
+  READY
+  DELIVERED
+  CANCELLED
+}
+
+enum AssetStatus {
+  IN_STOCK
+  IN_USE
+  MAINTENANCE
+  SCRAPPED
+}
+
+enum AccountStatus {
+  AVAILABLE
+  ASSIGNED
+}
+
+model Request {
+  id            String       @id @default(uuid())
+  employeeName  String
+  department    String
+  jobRole       String
+  status        RequestStatus @default(DRAFT)
+  requestDate   DateTime     @default(now())
+  createdBy     String
+  createdAt     DateTime     @default(now())
+  updatedAt     DateTime     @updatedAt
+
+  assignments   ResourceAssignment[]
+
+  @@map("requests")
+}
+
+model Asset {
+  id            String      @id @default(uuid())
+  assetTag      String      @unique
+  category      String
+  model         String
+  status        AssetStatus @default(IN_STOCK)
+  currentUserId String?     @unique
+  createdAt     DateTime    @default(now())
+  updatedAt     DateTime    @updatedAt
+
+  assignments   ResourceAssignment[]
+
+  @@map("assets")
+}
+
+model Account {
+  id              String        @id @default(uuid())
+  serviceName     String
+  accountId       String        @unique
+  initialPassword String
+  status          AccountStatus @default(AVAILABLE)
+  createdAt       DateTime      @default(now())
+  updatedAt       DateTime      @updatedAt
+
+  assignments     ResourceAssignment[]
+
+  @@map("accounts")
+}
+
+model ResourceAssignment {
+  id          String    @id @default(uuid())
+  requestId   String
+  assetId     String?
+  accountId   String?
+  assignedAt  DateTime  @default(now())
+  assignedBy  String
+
+  request     Request   @relation(fields: [requestId], references: [id], onDelete: Cascade)
+  asset       Asset?    @relation(fields: [assetId], references: [id], onDelete: Cascade)
+  account     Account?  @relation(fields: [accountId], references: [id], onDelete: Cascade)
+
+  @@unique([requestId, assetId])
+  @@unique([requestId, accountId])
+  @@map("resource_assignments")
+}

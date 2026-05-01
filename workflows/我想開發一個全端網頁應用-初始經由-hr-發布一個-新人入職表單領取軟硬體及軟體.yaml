@@ -1,0 +1,79 @@
+name: "Onboarding_Asset_Management_System_Design"
+description: "为新人入职软硬件资产领用系统提供完整的需求分析、技术选型及MVP功能清单"
+
+agents_dir: "agency-agents-zh"
+
+llm:
+  provider: openai
+  model: google/gemma-4-31b-it
+  max_tokens: 4096
+  timeout: 300000
+  retry: 2
+
+concurrency: 3
+
+steps:
+  - id: product_analysis
+    role: "product/product-manager"
+    name: "产品经理"
+    emoji: "📋"
+    task: |
+      针对“新人入职软硬件资产领用系统”进行详细的需求分析。
+      业务场景：
+      1. HR 发布新人入职表单（启动流程）。
+      2. MIS 填写具体的资产信息（包括：Email, VPN, Zoom, Office 等账号密码/序号，以及硬件的财产编号、硬件序号、出入库登记）。
+      3. HR 最终交付给新人。
+      
+      请输出：
+      - 业务流程图（用文字描述步骤）。
+      - 用户角色定义（HR, MIS, 管理员）。
+      - 核心业务逻辑（状态流转：待指派 -> 配置中 -> 已就绪 -> 已交付）。
+    output: requirement_analysis
+
+  - id: tech_stack_selection
+    role: "engineering/engineering-software-architect"
+    name: "软件架构师"
+    emoji: "🏗️"
+    task: |
+      基于以下业务需求，提供一套现代、高效且易于维护的全端技术选型方案：
+      需求：包含表单发布、资产登记（敏感数据存储）、状态跟踪、多角色协作。
+      
+      请提供：
+      1. 前端选型（如 React/Next.js 或 Vue3，并说明理由）。
+      2. 后端选型（如 Node.js/Python/Go，并说明理由）。
+      3. 数据库选型（关系型数据库如 PostgreSQL 或 MySQL，需考虑资产表与用户信息表的关联）。
+      4. 关键技术点：如何处理账号密码等敏感信息的加密存储。
+    output: tech_stack
+
+  - id: mvp_feature_definition
+    role: "product/product-sprint-prioritizer"
+    name: "Sprint 排序师"
+    emoji: "🎯"
+    task: |
+      结合 {{requirement_analysis}} 的需求分析，制定一个 MVP（最小可行性产品）功能清单。
+      请将功能分为以下模块并列出具体功能点：
+      1. HR 模块：创建新人入职请求、查看资产准备进度、标记交付完成。
+      2. MIS 模块：接收指派通知、填写软硬件资产详情（账号/序号/财编）、更新库存储备状态。
+      3. 基础模块：简单的权限管理、资产状态看板。
+      
+      请确保清单具有可操作性，区分“必须有 (Must-have)”和“可以有 (Nice-to-have)”。
+    output: mvp_list
+    depends_on: [product_analysis]
+
+  - id: final_spec_assembly
+    role: "engineering/engineering-technical-writer"
+    name: "技术文档工程师"
+    emoji: "✍️"
+    task: |
+      请将之前所有步骤的产出整合为一份完整的《新人入职资产管理系统设计规格书》。
+      
+      文档必须包含以下章节：
+      1. **项目概述**：简述系统目标。
+      2. **需求分析**：直接引用 {{requirement_analysis}}。
+      3. **技术架构方案**：详细整合 {{tech_stack}}，包含前端、后端、数据库及安全性设计。
+      4. **MVP 功能清单**：直接引用 {{mvp_list}}。
+      5. **交付里程碑**：建议的开发阶段划分（如：基础框架 -> 核心流转 -> 权限与安全 -> 测试发布）。
+      
+      请确保文档专业、结构清晰，直接输出最终的完整设计文档。
+    output: final_design_document
+    depends_on: [product_analysis, tech_stack_selection, mvp_feature_definition]

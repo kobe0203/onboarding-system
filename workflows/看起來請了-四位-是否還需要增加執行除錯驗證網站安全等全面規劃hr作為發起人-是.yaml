@@ -1,0 +1,102 @@
+name: "新人入职 IT 资源与安全交付工作流"
+description: "从 HR 发起需求到 MIS 执行资源创建，并经过安全审计与除错验证的完整入职交付流程"
+
+agents_dir: "agency-agents-zh"
+
+llm:
+  provider: openai
+  model: google/gemma-4-31b-it
+  max_tokens: 4096
+  timeout: 300000
+  retry: 2
+
+concurrency: 3
+
+inputs:
+  - name: new_hire_info
+    description: "新人基本信息（姓名、岗位、部门、入职日期）"
+    required: true
+  - name: hr_requirements
+    description: "HR 提出的资源需求选项（如：需要笔记本、VPN权限、特定软件、企业邮箱、财务系统权限等）"
+    required: true
+
+steps:
+  - id: product_manager_spec
+    role: "product/product-manager"
+    name: "产品经理"
+    emoji: "📋"
+    task: |
+      你作为需求对接人，将 HR 提交的 {{hr_requirements}} 和 {{new_hire_info}} 转化为一份标准的“IT 资源交付规格说明书”。
+      要求：
+      1. 将模糊的需求选项转化为明确的技术指标（例如：将“需要财务权限”转化为“申请 ERP-Finance-Read-Write 角色”）。
+      2. 定义交付清单（Checklist），包括账号、硬件、软件权限。
+      3. 设定交付截止时间线。
+    output: delivery_spec
+
+  - id: software_architect_design
+    role: "engineering/engineering-software-architect"
+    name: "技术架构师"
+    emoji: "🏗️"
+    task: |
+      基于 {{delivery_spec}}，规划资源创建的技术实现路径。
+      要求：
+      1. 确定账号创建的层级结构（AD域、云平台、第三方SaaS）。
+      2. 设计权限最小化方案，确保新人仅拥有岗位必需的权限。
+      3. 规划资源分配的依赖顺序（例如：必须先有邮箱账号才能开通 VPN）。
+    output: implementation_plan
+    depends_on: [product_manager_spec]
+
+  - id: backend_dev_execution
+    role: "engineering/engineering-backend-architect"
+    name: "MIS 执行官"
+    emoji: "💻"
+    task: |
+      按照 {{implementation_plan}} 执行实际的资源建立工作。
+      要求：
+      1. 模拟执行账号创建、权限指派、硬件配置流程。
+      2. 输出一份详细的《资源交付记录表》，包含所有已开通的账号 ID、访问地址及权限等级。
+      3. 记录在执行过程中遇到的任何异常情况。
+    output: deployment_log
+    depends_on: [software_architect_design]
+
+  - id: security_audit
+    role: "engineering/engineering-security-engineer"
+    name: "安全工程师"
+    emoji: "🛡️"
+    task: |
+      对 {{deployment_log}} 中记录的资源配置进行安全审计和网站/权限安全验证。
+      要求：
+      1. 检查是否存在权限过度授予（Privilege Escalation）风险。
+      2. 验证账号是否开启了 MFA（多因素认证）及强密码策略。
+      3. 对新分配的内部网站访问权限进行扫描，确保没有不当的暴露。
+      4. 如果发现漏洞，直接给出修复后的配置方案，而非仅提供建议。
+    output: security_verified_log
+    depends_on: [backend_dev_execution]
+
+  - id: qa_verification
+    role: "testing/testing-reality-checker"
+    name: "验收测试员"
+    emoji: "🔍"
+    task: |
+      执行最后的“除错验证”。对照最初的 {{delivery_spec}} 和最终的 {{security_verified_log}}。
+      要求：
+      1. 验证所有 HR 请求的项是否全部交付且可用。
+      2. 模拟新人登录流程，确认无死链、无权限缺失。
+      3. 确认安全工程师的所有修复项已落实。
+      4. 只有所有项通过验证，才给出“交付就绪”结论。
+    output: final_qa_report
+    depends_on: [security_audit, product_manager_spec]
+
+  - id: final_handover_doc
+    role: "engineering/engineering-technical-writer"
+    name: "文档工程师"
+    emoji: "✍️"
+    task: |
+      汇总所有步骤的产出，为 HR 和新员工生成一份专业的《新人 IT 资源就绪手册》。
+      要求：
+      1. 包含：欢迎词、账号清单（脱敏）、各系统登录指南、安全操作规范。
+      2. 基于 {{final_qa_report}} 确认的所有可用资源进行编写。
+      3. 格式要求：清晰的 Markdown 格式，分为“账号概览”、“登录步骤”、“安全须知”三个章节。
+      4. 最终输出必须是一个可以直接发送给新人的完整文档。
+    output: onboard_it_handbook
+    depends_on: [qa_verification]

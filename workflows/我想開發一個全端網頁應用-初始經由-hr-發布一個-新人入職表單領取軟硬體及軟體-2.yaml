@@ -1,0 +1,82 @@
+name: "新人入职资源管理系统-需求与架构设计"
+description: "针对HR发布入职表单、MIS登记软硬体资源、最终交付新人的全端应用需求，进行深度分析、技术选型及MVP定义。"
+
+agents_dir: "agency-agents-zh"
+
+llm:
+  provider: openai
+  model: google/gemma-4-31b-it
+  max_tokens: 4096
+  timeout: 300000
+  retry: 2
+
+concurrency: 3
+
+steps:
+  - id: requirement_analysis
+    role: "product/product-manager"
+    name: "产品经理"
+    emoji: "📋"
+    task: |
+      针对用户提出的“新人入职资源领取系统”进行详细的需求分析。
+      需求核心场景：
+      1. HR 发布新人入职请求表单。
+      2. MIS 接收请求并登记具体资源：
+         - 软件账号（Email, VPN, Zoom, Office等）的账号、密码、序号。
+         - 硬件设备（笔记本、显示器等）的财产编号、硬件序号。
+         - 出入库状态登记。
+      3. MIS 填写完成并发布后，HR 将资源信息交付给新人。
+      
+      请输出：
+      - 业务流程图（用文字描述步骤）。
+      - 详细的用户角色权限矩阵（HR vs MIS）。
+      - 核心业务逻辑分析（如：资源状态流转、资产关联关系）。
+    output: business_requirements
+
+  - id: tech_stack_selection
+    role: "engineering/engineering-software-architect"
+    name: "技术总监"
+    emoji: "🏗️"
+    task: |
+      基于 {{business_requirements}} 中的业务复杂度，为该全端应用制定技术选型方案。
+      需要覆盖：
+      - 前端框架：选择一个适合快速开发且具有良好管理后台能力的框架（如 React/Vue/Next.js）。
+      - 后端架构：选择一个高效的 API 开发方案（如 Node.js/Python/Go 或 Laravel）。
+      - 数据库设计：选择合适的数据库（关系型数据库以保证资产编号的唯一性和一致性），并简述核心表结构（User, Asset, Request, Account）。
+      - 部署方案：建议的云服务或容器化方案。
+      
+      请给出每项选型的理由以及它们如何支撑本系统的核心需求。
+    output: tech_stack
+    depends_on: [requirement_analysis]
+
+  - id: mvp_feature_list
+    role: "product/product-sprint-prioritizer"
+    name: "Sprint 排序师"
+    emoji: "🎯"
+    task: |
+      结合 {{business_requirements}} 和 {{tech_stack}}，将该需求拆解为 MVP（最小可行性产品）的功能清单。
+      请将功能分为以下模块，并标注优先级（P0/P1）：
+      1. 表单模块：HR 创建请求、请求状态跟踪。
+      2. 资源登记模块：MIS 填写软硬体账号/序号/财产编号、库存状态更新。
+      3. 交付模块：资源信息导出或通知 HR 交付。
+      4. 管理模块：基础的用户权限管理、资产清单查询。
+      
+      请以表格形式输出：功能名称 | 描述 | 优先级 | 验收标准。
+    output: mvp_list
+    depends_on: [requirement_analysis, tech_stack_selection]
+
+  - id: final_specification_assembly
+    role: "engineering/engineering-technical-writer"
+    name: "技术文档工程师"
+    emoji: "✍️"
+    task: |
+      将上述所有分析结果整合为一份专业的《新人入职资源管理系统-初始设计规格书》。
+      必须包含以下章节：
+      1. 项目概述：描述系统的目的和核心价值。
+      2. 业务分析：引用 {{business_requirements}}，包含流程图和权限矩阵。
+      3. 技术方案：引用 {{tech_stack}}，包含前端/后端/数据库的具体选型及理由。
+      4. MVP 功能路线图：引用 {{mvp_list}}，详细列出首版开发范围。
+      
+      要求：语言专业、结构清晰，直接输出可用于指导开发团队执行的最终文档。
+    output: final_design_document
+    depends_on: [requirement_analysis, tech_stack_selection, mvp_feature_list]

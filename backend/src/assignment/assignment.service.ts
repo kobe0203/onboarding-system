@@ -41,7 +41,7 @@ export class AssignmentService {
           data: { status: 'IN_USE', currentUserId: request.employeeName },
         });
 
-        await tx.assignment.create({
+        await tx.resourceAssignment.create({
           data: {
             requestId,
             assetId,
@@ -70,7 +70,7 @@ export class AssignmentService {
           data: { status: 'ASSIGNED' },
         });
 
-        await tx.assignment.create({
+        await tx.resourceAssignment.create({
           data: {
             requestId,
             accountId,
@@ -94,7 +94,7 @@ export class AssignmentService {
   }
 
   async findAll() {
-    return this.prisma.assignment.findMany({
+    return this.prisma.resourceAssignment.findMany({
       include: {
         request: true,
         asset: true,
@@ -107,7 +107,7 @@ export class AssignmentService {
   }
 
   async findByRequest(requestId: string) {
-    return this.prisma.assignment.findMany({
+    return this.prisma.resourceAssignment.findMany({
       where: { requestId },
       include: {
         asset: true,
@@ -120,7 +120,7 @@ export class AssignmentService {
   }
 
   async remove(id: string) {
-    const assignment = await this.prisma.assignment.findUnique({
+    const assignment = await this.prisma.resourceAssignment.findUnique({
       where: { id },
       include: {
         asset: true,
@@ -147,7 +147,7 @@ export class AssignmentService {
         });
       }
 
-      await tx.assignment.delete({
+      await tx.resourceAssignment.delete({
         where: { id },
       });
     });

@@ -1,6 +1,6 @@
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000';
 
-// 在 Codespace 環境中，使用相對路徑
+// 在 Codespace 環境中，使用正確的 URL
 const getApiUrl = () => {
   if (typeof window !== 'undefined') {
     // 在瀏覽器中，檢查是否在 Codespace 環境

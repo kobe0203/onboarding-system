@@ -1,5 +1,3 @@
-import { RequestStatus } from '@prisma/client';
-
 export class CreateRequestDto {
   employeeName: string;
   department: string;
@@ -11,7 +9,7 @@ export class UpdateRequestDto {
   employeeName?: string;
   department?: string;
   jobRole?: string;
-  status?: RequestStatus;
+  status?: string;
 }
 
 export class RequestResponseDto {
@@ -19,7 +17,7 @@ export class RequestResponseDto {
   employeeName: string;
   department: string;
   jobRole: string;
-  status: RequestStatus;
+  status: string;
   requestDate: Date;
   createdBy: string;
   createdAt: Date;

@@ -1,5 +1,3 @@
-import { AccountStatus } from '@prisma/client';
-
 export class CreateAccountDto {
   serviceName: string;
   accountId: string;
@@ -10,7 +8,7 @@ export class UpdateAccountDto {
   serviceName?: string;
   accountId?: string;
   initialPassword?: string;
-  status?: AccountStatus;
+  status?: string;
 }
 
 export class AccountResponseDto {
@@ -18,7 +16,7 @@ export class AccountResponseDto {
   serviceName: string;
   accountId: string;
   initialPassword: string;
-  status: AccountStatus;
+  status: string;
   createdAt: Date;
   updatedAt: Date;
 }

@@ -1,5 +1,3 @@
-import { AssetStatus } from '@prisma/client';
-
 export class CreateAssetDto {
   assetTag: string;
   category: string;
@@ -10,7 +8,7 @@ export class UpdateAssetDto {
   assetTag?: string;
   category?: string;
   model?: string;
-  status?: AssetStatus;
+  status?: string;
   currentUserId?: string;
 }
 
@@ -19,7 +17,7 @@ export class AssetResponseDto {
   assetTag: string;
   category: string;
   model: string;
-  status: AssetStatus;
+  status: string;
   currentUserId: string | null;
   createdAt: Date;
   updatedAt: Date;

@@ -1,17 +1,5 @@
-const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000';
-
-// 在 Codespace 環境中，使用正確的 URL
-const getApiUrl = () => {
-  if (typeof window !== 'undefined') {
-    // 在瀏覽器中，檢查是否在 Codespace 環境
-    const hostname = window.location.hostname;
-    if (hostname.includes('github.dev') || hostname.includes('app.github.dev')) {
-      // 在 Codespace 中，使用相對路徑
-      return '';
-    }
-  }
-  return API_BASE_URL;
-};
+// 在 Codespace 環境中，使用 API 代理
+const API_BASE = '/api';
 
 async function handleResponse(response: Response) {
   if (!response.ok) {
@@ -23,65 +11,65 @@ async function handleResponse(response: Response) {
 
 export const api = {
   requests: {
-    getAll: () => fetch(`${getApiUrl()}/requests`).then(handleResponse),
-    getById: (id: string) => fetch(`${getApiUrl()}/requests/${id}`).then(handleResponse),
-    create: (data: any) => fetch(`${getApiUrl()}/requests`, {
+    getAll: () => fetch(`${API_BASE}/requests`).then(handleResponse),
+    getById: (id: string) => fetch(`${API_BASE}/requests/${id}`).then(handleResponse),
+    create: (data: any) => fetch(`${API_BASE}/requests`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(data),
     }).then(handleResponse),
-    update: (id: string, data: any) => fetch(`${getApiUrl()}/requests/${id}`, {
+    update: (id: string, data: any) => fetch(`${API_BASE}/requests/${id}`, {
       method: 'PATCH',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(data),
     }).then(handleResponse),
-    delete: (id: string) => fetch(`${getApiUrl()}/requests/${id}`, {
+    delete: (id: string) => fetch(`${API_BASE}/requests/${id}`, {
       method: 'DELETE',
     }).then(handleResponse),
   },
   assets: {
-    getAll: () => fetch(`${getApiUrl()}/assets`).then(handleResponse),
-    getAvailable: () => fetch(`${getApiUrl()}/assets/available`).then(handleResponse),
-    create: (data: any) => fetch(`${getApiUrl()}/assets`, {
+    getAll: () => fetch(`${API_BASE}/assets`).then(handleResponse),
+    getAvailable: () => fetch(`${API_BASE}/assets/available`).then(handleResponse),
+    create: (data: any) => fetch(`${API_BASE}/assets`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(data),
     }).then(handleResponse),
-    update: (id: string, data: any) => fetch(`${getApiUrl()}/assets/${id}`, {
+    update: (id: string, data: any) => fetch(`${API_BASE}/assets/${id}`, {
       method: 'PATCH',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(data),
     }).then(handleResponse),
-    delete: (id: string) => fetch(`${getApiUrl()}/assets/${id}`, {
+    delete: (id: string) => fetch(`${API_BASE}/assets/${id}`, {
       method: 'DELETE',
     }).then(handleResponse),
   },
   accounts: {
-    getAll: () => fetch(`${getApiUrl()}/accounts`).then(handleResponse),
-    getAvailable: () => fetch(`${getApiUrl()}/accounts/available`).then(handleResponse),
-    create: (data: any) => fetch(`${getApiUrl()}/accounts`, {
+    getAll: () => fetch(`${API_BASE}/accounts`).then(handleResponse),
+    getAvailable: () => fetch(`${API_BASE}/accounts/available`).then(handleResponse),
+    create: (data: any) => fetch(`${API_BASE}/accounts`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(data),
     }).then(handleResponse),
-    update: (id: string, data: any) => fetch(`${getApiUrl()}/accounts/${id}`, {
+    update: (id: string, data: any) => fetch(`${API_BASE}/accounts/${id}`, {
       method: 'PATCH',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(data),
     }).then(handleResponse),
-    delete: (id: string) => fetch(`${getApiUrl()}/accounts/${id}`, {
+    delete: (id: string) => fetch(`${API_BASE}/accounts/${id}`, {
       method: 'DELETE',
     }).then(handleResponse),
   },
   assignments: {
-    getAll: () => fetch(`${getApiUrl()}/assignments`).then(handleResponse),
-    getByRequest: (requestId: string) => fetch(`${getApiUrl()}/assignments/request/${requestId}`).then(handleResponse),
-    create: (data: any) => fetch(`${getApiUrl()}/assignments`, {
+    getAll: () => fetch(`${API_BASE}/assignments`).then(handleResponse),
+    getByRequest: (requestId: string) => fetch(`${API_BASE}/assignments/request/${requestId}`).then(handleResponse),
+    create: (data: any) => fetch(`${API_BASE}/assignments`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(data),
     }).then(handleResponse),
-    delete: (id: string) => fetch(`${getApiUrl()}/assignments/${id}`, {
+    delete: (id: string) => fetch(`${API_BASE}/assignments/${id}`, {
       method: 'DELETE',
     }).then(handleResponse),
   },

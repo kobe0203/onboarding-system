@@ -1,0 +1,89 @@
+name: "代码故障诊断与修复工作流"
+description: "针对无法串联运行的程序进行深度除错，从代码审查、逻辑分析到最终修复，确保程序能够完整闭环运行。"
+
+agents_dir: "agency-agents-zh"
+
+llm:
+  provider: openai
+  model: google/gemma-4-31b-it
+  max_tokens: 4096
+  timeout: 300000
+  retry: 2
+
+concurrency: 2
+
+inputs:
+  - name: source_code
+    description: "需要除错的完整源代码（包含所有相关文件/模块）"
+    required: true
+  - name: error_logs
+    description: "运行时报错信息、堆栈跟踪（Stack Trace）或具体的不正常运行现象描述"
+    required: true
+  - name: expected_behavior
+    description: "程序预期应该实现的具体功能和串联逻辑"
+    required: true
+
+steps:
+  - id: code_audit
+    role: "engineering/engineering-code-reviewer"
+    name: "代码审计员"
+    emoji: "🔍"
+    task: |
+      请详细分析提供的源代码 {{source_code}}。
+      重点检查：
+      1. 模块之间的调用接口是否匹配（参数类型、返回值）。
+      2. 是否存在明显的语法错误、死循环或未处理的异常。
+      3. 检查依赖项是否正确导入。
+      输出一份详细的【代码缺陷清单】，指出可能导致无法串联运行的具体位置。
+    output: audit_report
+
+  - id: log_analysis
+    role: "engineering/engineering-ai-data-remediation-engineer"
+    name: "故障分析专家"
+    emoji: "🛠️"
+    task: |
+      | 请分析运行日志 {{error_logs}}。
+      结合预期行为 {{expected_behavior}}，定位报错的根源。
+      区分是“环境配置问题”、“数据传输中断”还是“逻辑崩溃”。
+      输出一份【错误根因分析报告】，明确指出程序在哪个环节断开了串联。
+    output: root_cause_analysis
+
+  - id: logic_architect
+    role: "engineering/engineering-software-architect"
+    name: "架构总监"
+    emoji: "🏗️"
+    task: |
+      结合代码审计报告 {{audit_report}} 和根因分析 {{root_cause_analysis}}，重新梳理程序的执行链路。
+      针对“无法串联运行”的问题，设计一个正确的串联逻辑方案。
+      输出一份【修复技术方案】，包含：
+      1. 需要修改的文件和函数名。
+      2. 修改的逻辑步骤（Step-by-step）。
+      3. 确保串联成功的验证点。
+    output: repair_plan
+    depends_on: [code_audit, log_analysis]
+
+  - id: code_fixer
+    role: "engineering/engineering-minimal-change-engineer"
+    name: "精益修复工程师"
+    emoji: "⚡"
+    task: |
+      请根据【修复技术方案】 {{repair_plan}} 对源代码 {{source_code}} 进行实际修复。
+      遵循“最小变更原则”：仅修复导致串联失败的 Bug，不要进行无关的重构。
+      要求：
+      1. 输出完整的、可直接运行的修复后代码。
+      2. 在代码中使用注释标明修复的具体位置。
+      3. 提供简短的运行指南（如需要安装特定依赖）。
+    output: fixed_code
+    depends_on: [logic_architect]
+
+  - id: quality_assurance
+    role: "testing/testing-reality-checker"
+    name: "质量验收官"
+    emoji: "✅"
+    task: |
+      对修复后的代码 {{fixed_code}} 进行最后的逻辑推演和验证。
+      对照预期行为 {{expected_behavior}}，检查所有串联节点是否已打通。
+      如果发现仍有潜在风险，请直接在代码基础上进行最后的微调。
+      最终输出：【完整修复后的最终成品代码】以及一份【运行验证清单】。
+    output: final_deliverable
+    depends_on: [code_fixer]

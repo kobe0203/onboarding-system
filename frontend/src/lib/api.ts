@@ -1,14 +1,13 @@
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000';
 
-// 在 Codespace 環境中，使用正確的 URL
+// 在 Codespace 環境中，使用相對路徑
 const getApiUrl = () => {
   if (typeof window !== 'undefined') {
     // 在瀏覽器中，檢查是否在 Codespace 環境
     const hostname = window.location.hostname;
     if (hostname.includes('github.dev') || hostname.includes('app.github.dev')) {
-      // 在 Codespace 中，使用完整的 URL
-      const port = window.location.port;
-      return `http://localhost:3000`;
+      // 在 Codespace 中，使用相對路徑
+      return '';
     }
   }
   return API_BASE_URL;

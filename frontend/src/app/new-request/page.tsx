@@ -19,11 +19,13 @@ export default function NewRequestPage() {
     setLoading(true);
 
     try {
-      await api.requests.create(formData);
+      const result = await api.requests.create(formData);
+      console.log('Request created successfully:', result);
       router.push('/');
     } catch (error) {
       console.error('Failed to create request:', error);
-      alert('創建請求失敗');
+      const errorMessage = error instanceof Error ? error.message : '創建請求失敗，請檢查後端服務是否運行';
+      alert(`錯誤：${errorMessage}\n\n請確保後端服務正在運行：\ncd backend\nnpm run start:dev`);
     } finally {
       setLoading(false);
     }
@@ -49,7 +51,8 @@ export default function NewRequestPage() {
                 required
                 value={formData.employeeName}
                 onChange={(e) => setFormData({ ...formData, employeeName: e.target.value })}
-                className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm p-2 border"
+                className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm p-2 border text-gray-900 bg-white"
+                placeholder="請輸入員工姓名"
               />
             </div>
 
@@ -63,7 +66,8 @@ export default function NewRequestPage() {
                 required
                 value={formData.department}
                 onChange={(e) => setFormData({ ...formData, department: e.target.value })}
-                className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm p-2 border"
+                className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm p-2 border text-gray-900 bg-white"
+                placeholder="請輸入部門"
               />
             </div>
 
@@ -77,7 +81,8 @@ export default function NewRequestPage() {
                 required
                 value={formData.jobRole}
                 onChange={(e) => setFormData({ ...formData, jobRole: e.target.value })}
-                className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm p-2 border"
+                className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm p-2 border text-gray-900 bg-white"
+                placeholder="請輸入職位"
               />
             </div>
 
